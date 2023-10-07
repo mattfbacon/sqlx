@@ -1,5 +1,8 @@
 //! Provides [`Decode`] for decoding values from the database.
 
+use std::rc::Rc;
+use std::sync::Arc;
+
 use crate::database::{Database, HasValueRef};
 use crate::error::BoxDynError;
 
@@ -75,5 +78,27 @@ where
         } else {
             Ok(Some(T::decode(value)?))
         }
+    }
+}
+
+impl<'r, DB, T: ?Sized + 'r> Decode<'r, DB> for Rc<T>
+where
+    DB: Database,
+    &'r T: Decode<'r, DB>,
+    Rc<T>: From<&'r T>,
+{
+    fn decode(value: <DB as HasValueRef<'r>>::ValueRef) -> Result<Self, BoxDynError> {
+        <&'r T as Decode<'r, DB>>::decode(value).map(Rc::from)
+    }
+}
+
+impl<'r, DB, T: ?Sized + 'r> Decode<'r, DB> for Arc<T>
+where
+    DB: Database,
+    &'r T: Decode<'r, DB>,
+    Arc<T>: From<&'r T>,
+{
+    fn decode(value: <DB as HasValueRef<'r>>::ValueRef) -> Result<Self, BoxDynError> {
+        <&'r T as Decode<'r, DB>>::decode(value).map(Arc::from)
     }
 }
