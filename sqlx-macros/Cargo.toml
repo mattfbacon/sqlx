@@ -38,6 +38,7 @@ rust_decimal = ["sqlx-macros-core/rust_decimal"]
 time = ["sqlx-macros-core/time"]
 uuid = ["sqlx-macros-core/uuid"]
 json = ["sqlx-macros-core/json"]
+regexp = ["sqlx-macros-core/regexp"]
 
 [dependencies]
 sqlx-core = { workspace = true, features = ["any"] }
