@@ -44,8 +44,6 @@ pub struct EstablishParams {
     extensions: IndexMap<CString, Option<CString>>,
     pub(crate) thread_name: String,
     pub(crate) command_channel_size: usize,
-    #[cfg(feature = "regexp")]
-    register_regexp_function: bool,
 }
 
 impl EstablishParams {
@@ -147,8 +145,6 @@ impl EstablishParams {
             extensions,
             thread_name: (options.thread_name)(THREAD_ID.fetch_add(1, Ordering::AcqRel)),
             command_channel_size: options.command_channel_size,
-            #[cfg(feature = "regexp")]
-            register_regexp_function: options.register_regexp_function,
         })
     }
 
@@ -255,7 +251,7 @@ impl EstablishParams {
         }
 
         #[cfg(feature = "regexp")]
-        if self.register_regexp_function {
+        {
             // configure a `regexp` function for sqlite, it does not come with one by default
             let status = crate::regexp::register(handle.as_ptr());
             if status != SQLITE_OK {

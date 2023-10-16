@@ -81,9 +81,6 @@ pub struct SqliteConnectOptions {
     pub(crate) thread_name: Arc<DebugFn<dyn Fn(u64) -> String + Send + Sync + 'static>>,
 
     pub(crate) optimize_on_close: OptimizeOnClose,
-
-    #[cfg(feature = "regexp")]
-    pub(crate) register_regexp_function: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -200,8 +197,6 @@ impl SqliteConnectOptions {
             command_channel_size: 50,
             row_channel_size: 50,
             optimize_on_close: OptimizeOnClose::Disabled,
-            #[cfg(feature = "regexp")]
-            register_regexp_function: false,
         }
     }
 
@@ -524,28 +519,9 @@ impl SqliteConnectOptions {
         self
     }
 
-    /// Register a regexp function that allows using regular expressions in queries.
-    ///
-    /// ```
-    /// # use std::str::FromStr;
-    /// # use sqlx::{ConnectOptions, Connection, Row};
-    /// # use sqlx_sqlite::SqliteConnectOptions;
-    /// # async fn run() -> sqlx::Result<()> {
-    /// let mut sqlite = SqliteConnectOptions::from_str("sqlite://:memory:")?
-    ///     .with_regexp()
-    ///     .connect()
-    ///     .await?;
-    /// let tables = sqlx::query("SELECT name FROM sqlite_schema WHERE name REGEXP 'foo(\\d+)bar'")
-    ///     .fetch_all(&mut sqlite)
-    ///     .await?;
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// This uses the [`regex`] crate, and is only enabled when you enable the `regex` feature is enabled on sqlx
+    /// Does nothing. If the `regexp` feature is enabled, the function is always registered.
     #[cfg(feature = "regexp")]
-    pub fn with_regexp(mut self) -> Self {
-        self.register_regexp_function = true;
+    pub fn with_regexp(self) -> Self {
         self
     }
 }

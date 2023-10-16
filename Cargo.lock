@@ -3148,6 +3148,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sqlx",
+ "sqlx-sqlite",
  "tokio",
  "url",
 ]
